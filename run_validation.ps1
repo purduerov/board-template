@@ -45,7 +45,18 @@ $kibotConfig = "libs/pcb-devops/kibot_master.yaml"
 
 if (-not (Test-Path $kibotConfig)) {
     Write-Host "Local master config not found in submodules. Fetching latest from GitHub..." -ForegroundColor Yellow
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/purduerov/pcb-devops/master/kibot_master.yaml" -OutFile "local_kibot.yaml"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/purduerov/pcb-devops/b6839c5ff1d7cdca9c342276352930b5d787c8f9/kibot_master.yaml" -OutFile "local_kibot.yaml"
+
+    # Validate the downloaded file to prevent supply chain tampering
+    $expectedHash = "9173794e93222521800c7f84b7e370bf46dbf480e68513c236fe59ca9c079ed7"
+    $actualHash = (Get-FileHash "local_kibot.yaml" -Algorithm SHA256).Hash
+
+    if ($actualHash -ne $expectedHash) {
+        Remove-Item "local_kibot.yaml"
+        Write-Error "Security Error: Downloaded kibot_master.yaml hash mismatch!`nExpected: $expectedHash`nActual:   $actualHash`nFile deleted to prevent supply chain attack."
+        exit 1
+    }
+
     $kibotConfig = "local_kibot.yaml"
 }
 

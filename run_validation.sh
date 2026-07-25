@@ -21,7 +21,21 @@ KIBOT_CONFIG="libs/pcb-devops/kibot_master.yaml"
 
 if [ ! -f "$KIBOT_CONFIG" ]; then
     echo "Local master config not found in submodules. Fetching latest from GitHub..."
-    curl -sSL https://raw.githubusercontent.com/purduerov/pcb-devops/master/kibot_master.yaml -o local_kibot.yaml
+    curl -sSL https://raw.githubusercontent.com/purduerov/pcb-devops/b6839c5ff1d7cdca9c342276352930b5d787c8f9/kibot_master.yaml -o local_kibot.yaml
+
+    # Validate the downloaded file to prevent supply chain tampering
+    EXPECTED_HASH="9173794e93222521800c7f84b7e370bf46dbf480e68513c236fe59ca9c079ed7"
+    ACTUAL_HASH=$(sha256sum local_kibot.yaml | awk '{print $1}')
+
+    if [ "$ACTUAL_HASH" != "$EXPECTED_HASH" ]; then
+        rm -f local_kibot.yaml
+        echo "Security Error: Downloaded kibot_master.yaml hash mismatch!"
+        echo "Expected: $EXPECTED_HASH"
+        echo "Actual:   $ACTUAL_HASH"
+        echo "File deleted to prevent supply chain attack."
+        exit 1
+    fi
+
     KIBOT_CONFIG="local_kibot.yaml"
 fi
 
