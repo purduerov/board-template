@@ -8,4 +8,4 @@ on:
 
 jobs:
   run-validation:
-    uses: purduerov/pcb-devops/.github/workflows/run-kicad-ci.yml@master
+    uses: purduerov/pcb-devops/.github/workflows/run-kicad-ci.yml@b6839c5ff1d7cdca9c342276352930b5d787c8f9
