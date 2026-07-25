@@ -21,9 +21,8 @@ if [ -z "$SCH_CLEAN" ]; then
     echo "Configured filters! Re-staging files to apply the cleaning..."
     # Re-stage any staged KiCad files to trigger the newly configured clean filters
     # xargs -r is a GNU extension, use a portable alternative or check if there are files
-    STAGED_FILES=$(git diff --cached --name-only | grep -E '\.(kicad_sch|kicad_pcb|kicad_pro)$' || true)
-    if [ -n "$STAGED_FILES" ]; then
-        echo "$STAGED_FILES" | xargs git add
+    if git diff --cached --name-only --diff-filter=d '*.kicad_sch' '*.kicad_pcb' '*.kicad_pro' | grep -q .; then
+        git diff --cached --name-only -z --diff-filter=d '*.kicad_sch' '*.kicad_pcb' '*.kicad_pro' | xargs -0 git add
     fi
     echo "Re-staging complete."
 fi
