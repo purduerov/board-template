@@ -92,4 +92,5 @@
 		)
 	)
 	(embedded_fonts no)
+  (gr_rect (start 0 0) (end 50 50) (stroke (width 0.1) (type solid)) (layer "Edge.Cuts") (uuid "30d6dbef-75e9-445a-ae14-3a7c64eb3d79"))
 )
