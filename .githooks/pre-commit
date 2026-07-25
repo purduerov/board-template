@@ -23,7 +23,9 @@ if [ -z "$SCH_CLEAN" ]; then
     # xargs -r is a GNU extension, use a portable alternative or check if there are files
     STAGED_FILES=$(git diff --cached --name-only | grep -E '\.(kicad_sch|kicad_pcb|kicad_pro)$' || true)
     if [ -n "$STAGED_FILES" ]; then
-        echo "$STAGED_FILES" | xargs git add
+        echo "$STAGED_FILES" | while IFS= read -r file; do
+            git add "$file"
+        done
     fi
     echo "Re-staging complete."
 fi
