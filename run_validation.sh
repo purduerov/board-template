@@ -26,6 +26,6 @@ if [ ! -f "$KIBOT_CONFIG" ]; then
 fi
 
 echo "Starting KiBot Local Validation..."
-docker run --rm -v "${PROJECT_DIR}:/workspace" -w /workspace setsoft/kibot:latest kibot -c "$KIBOT_CONFIG" -s all -d Generated_Outputs
+docker run --rm -v "${PROJECT_DIR}:/workspace" -w /workspace setsoft/kicad_auto kibot -c "$KIBOT_CONFIG" -s all -d Generated_Outputs
 
 echo "Validation completed successfully! Outputs are in the 'Generated_Outputs' directory."
