@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Post-checkout hook to automatically update submodules when switching branches
+# Only run on branch checkout (3rd arg is 1)
+if [ "$3" = "1" ]; then
+    echo "🔄 Auto-updating submodules for new branch..."
+    git submodule update --init --recursive
+fi

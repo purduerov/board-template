@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Post-merge hook to automatically sync submodules to remote master after git pull
+echo "🔄 Auto-syncing library submodules to latest remote master..."
+git submodule update --remote --recursive
