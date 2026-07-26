@@ -52,7 +52,7 @@ if (-not (Test-Path $kibotConfig)) {
 Write-Host "Starting KiBot Local Validation for: $schName / $pcbName" -ForegroundColor Cyan
 
 # Run KiBot container
-docker run --rm -v "${projectDir}:/workspace" -w /workspace setsoft/kibot:latest kibot -c $kibotConfig -s all -d Generated_Outputs
+docker run --rm -v "${projectDir}:/workspace" -w /workspace setsoft/kicad_auto:ki10@sha256:493666a06d900ed3352c50b0f75a76ccdfe194999c097d455021cab9e3c723fa kibot -c $kibotConfig -s all -d Generated_Outputs
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Validation and generation completed successfully! Outputs are in the 'Generated_Outputs' directory." -ForegroundColor Green
