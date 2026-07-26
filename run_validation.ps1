@@ -45,7 +45,7 @@ $kibotConfig = "libs/pcb-devops/kibot_master.yaml"
 
 if (-not (Test-Path $kibotConfig)) {
     Write-Host "Local master config not found in submodules. Fetching latest from GitHub..." -ForegroundColor Yellow
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/purduerov/pcb-devops/master/kibot_master.yaml" -OutFile "local_kibot.yaml"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/purduerov/pcb-devops/b6839c5ff1d7cdca9c342276352930b5d787c8f9/kibot_master.yaml" -OutFile "local_kibot.yaml"
     $kibotConfig = "local_kibot.yaml"
 }
 
