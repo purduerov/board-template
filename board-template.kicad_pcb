@@ -90,6 +90,7 @@
 			(scaleselection 1)
 			(outputdirectory "")
 		)
+	)
 	(gr_rect (start 0 0) (end 100 100)
 		(stroke (width 0.1) (type solid))
 		(fill none)
@@ -102,4 +103,5 @@
 	(gr_line (start 100 100) (end 0 100) (layer "Edge.Cuts") (width 0.1) (tstamp "a0000000-0000-0000-0000-000000000002"))
 	(gr_line (start 0 100) (end 0 0) (layer "Edge.Cuts") (width 0.1) (tstamp "a0000000-0000-0000-0000-000000000003"))
 )
+
 
