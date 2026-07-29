@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-commit hook to verify KiCad volatile metadata clean filters and auto-update library submodules.
+# Pre-commit hook to verify KiCad volatile metadata clean filters, auto-update submodules, and validate symbols.
 
 # 1. Auto-fetch latest Purdue ROV central library submodule before commit
 if [ -d "libs/purdue-rov-kicad-lib" ]; then
@@ -8,7 +8,12 @@ if [ -d "libs/purdue-rov-kicad-lib" ]; then
     git add libs/purdue-rov-kicad-lib || true
 fi
 
-# 2. Verify and configure KiCad clean/smudge filters if missing
+# 2. Verify symbol library compliance if symbol files are modified
+if [ -f "libs/purdue-rov-kicad-lib/scripts/linter_validator.py" ]; then
+    python3 libs/purdue-rov-kicad-lib/scripts/linter_validator.py libs/purdue-rov-kicad-lib/Symbols/*.kicad_sym || true
+fi
+
+# 3. Verify and configure KiCad clean/smudge filters if missing
 SCH_CLEAN=$(git config --get filter.kicad_sch_cleaner.clean || true)
 
 if [ -z "$SCH_CLEAN" ]; then
