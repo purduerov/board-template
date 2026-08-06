@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Runs local KiBot hardware validation and fabrication generation using Docker.
+    Runs local KiCad symbol validation and KiBot hardware generation.
 .DESCRIPTION
-    This script runs ERC (Electrical Rules Check), DRC (Design Rules Check),
-    and generates the schematic PDFs, Interactive BOMs, and Gerbers locally.
+    This script dynamically clones/pulls pcb-devops to run symbol linting
+    and KiBot validation/fabrication outputs locally.
 .EXAMPLE
     .\run_validation.ps1
 #>
@@ -15,47 +15,56 @@ if (-not $schClean) {
     & .\setup_git_filters.ps1
 }
 
-# Ensure Docker is running
-if (-not (Get-Command "docker" -ErrorAction SilentlyContinue)) {
-    Write-Error "Docker is not installed or not in the system PATH. Please install Docker Desktop to run local validation."
-    exit 1
-}
-
-# Resolve paths
-$projectDir = Get-Location
-$pcbFiles = Get-ChildItem -Path $projectDir -Filter "*.kicad_pcb"
-$schFiles = Get-ChildItem -Path $projectDir -Filter "*.kicad_sch"
-
-if ($schFiles.Count -eq 0) {
-    Write-Warning "No .kicad_sch file found in the root directory. Using wildcard detection."
-    $schName = "*.kicad_sch"
+# Auto-fetch/pull pcb-devops tools into .pcb-devops-cache
+$cacheDir = Join-Path $PSScriptRoot ".pcb-devops-cache"
+if (-not (Test-Path $cacheDir)) {
+    Write-Host "Cloning central pcb-devops tools..." -ForegroundColor Cyan
+    git clone --depth 1 https://github.com/purduerov/pcb-devops.git $cacheDir
 } else {
-    $schName = $schFiles[0].Name
+    Write-Host "Updating central pcb-devops tools..." -ForegroundColor Cyan
+    git -C $cacheDir pull origin master --quiet
 }
 
-if ($pcbFiles.Count -eq 0) {
-    Write-Warning "No .kicad_pcb file found in the root directory. Using wildcard detection."
-    $pcbName = "*.kicad_pcb"
+# Run central symbol linter on all *.kicad_sym files in libs/
+$symFiles = Get-ChildItem -Path (Join-Path $PSScriptRoot "libs") -Recurse -Filter "*.kicad_sym" -ErrorAction SilentlyContinue
+if ($symFiles) {
+    Write-Host "`nRunning central KiCad symbol library linter..." -ForegroundColor Cyan
+    $linterScript = Join-Path $cacheDir "scripts\linter_validator.py"
+    python $linterScript $symFiles.FullName
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Symbol library linter failed."
+        exit $LASTEXITCODE
+    }
 } else {
-    $pcbName = $pcbFiles[0].Name
+    Write-Host "No symbol files found in libs/ to lint." -ForegroundColor Yellow
 }
 
-# Path to the master kibot config (local copy or relative to submodule)
-$kibotConfig = "libs/pcb-devops/kibot_master.yaml"
+# Run KiBot container using central kibot_master.yaml if docker engine is running
+$dockerAvailable = $false
+try {
+    $null = docker info 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        $dockerAvailable = $true
+    }
+} catch {}
 
-if (-not (Test-Path $kibotConfig)) {
-    Write-Host "Local master config not found in submodules. Fetching latest from GitHub..." -ForegroundColor Yellow
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/purduerov/pcb-devops/b6839c5ff1d7cdca9c342276352930b5d787c8f9/kibot_master.yaml" -OutFile "local_kibot.yaml"
-    $kibotConfig = "local_kibot.yaml"
-}
+if ($dockerAvailable) {
+    $projectDir = Get-Location
+    $pcbFiles = Get-ChildItem -Path $projectDir -Filter "*.kicad_pcb"
+    $schFiles = Get-ChildItem -Path $projectDir -Filter "*.kicad_sch"
 
-Write-Host "Starting KiBot Local Validation for: $schName / $pcbName" -ForegroundColor Cyan
+    $schName = if ($schFiles.Count -gt 0) { $schFiles[0].Name } else { "*.kicad_sch" }
+    $pcbName = if ($pcbFiles.Count -gt 0) { $pcbFiles[0].Name } else { "*.kicad_pcb" }
 
-# Run KiBot container
-docker run --rm -v "${projectDir}:/workspace" -w /workspace setsoft/kicad_auto:ki10@sha256:493666a06d900ed3352c50b0f75a76ccdfe194999c097d455021cab9e3c723fa kibot -c $kibotConfig -s all -d Generated_Outputs
+    Write-Host "`nStarting KiBot Local Validation for: $schName / $pcbName" -ForegroundColor Cyan
+    docker run --rm -v "${projectDir}:/workspace" -w /workspace setsoft/kicad_auto:ki10@sha256:493666a06d900ed3352c50b0f75a76ccdfe194999c097d455021cab9e3c723fa kibot -c ".pcb-devops-cache/kibot_master.yaml" -s all -d Generated_Outputs
 
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "Validation and generation completed successfully! Outputs are in the 'Generated_Outputs' directory." -ForegroundColor Green
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Validation and generation completed successfully! Outputs are in the 'Generated_Outputs' directory." -ForegroundColor Green
+    } else {
+        Write-Error "KiBot validation failed. Please check the logs above for ERC/DRC failures."
+        exit $LASTEXITCODE
+    }
 } else {
-    Write-Error "KiBot validation failed. Please check the logs above for ERC/DRC failures."
+    Write-Host "`nDocker engine is not running. Skipping KiBot container validation." -ForegroundColor Yellow
 }
