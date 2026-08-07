@@ -3,10 +3,21 @@ name: Hardware CI/CD Pipeline
 on:
   push:
     branches: [ master, main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
   pull_request:
     branches: [ master, main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
 
 jobs:
   run-validation:
     uses: purduerov/pcb-devops/.github/workflows/run-kicad-ci.yml@master
     secrets: inherit
+
