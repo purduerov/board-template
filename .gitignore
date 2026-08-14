@@ -21,4 +21,3 @@ Outputs/
 # OS/Editor files
 .DS_Store
 Thumbs.db
-__pycache__/
