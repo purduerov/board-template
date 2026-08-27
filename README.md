@@ -1,65 +1,57 @@
 # Purdue ROV KiCad Board Template
 
-This is the central base template for starting any new hardware board project at Purdue ROV.
+Starter template for new PCB designs in Purdue ROV. Pre-configured with the team component library submodule, Git clean filters, isolation rules, and CI/CD validation.
 
----
+## Creating a New Board Repository
 
-## ⚡ Recommended Daily Workflow: 1-Click KiCad Launcher
-
-To ensure your local library is **always 100% up-to-date with new parts added by teammates** without ever needing to run manual Git commands:
-
-### 🎯 **Double-Click `LAUNCH_KICAD.bat` to Start Work**
-* **Windows:** Double-click **`LAUNCH_KICAD.bat`** in your project folder.
-* **Mac / Linux:** Double-click **`LAUNCH_KICAD.sh`** (or run `./LAUNCH_KICAD.sh` in terminal).
-
-#### **What this script does for you automatically:**
-1. **Auto-Fetches Central Library Parts (0.5 seconds):** Silently connects to `purdue-rov-kicad-lib` on GitHub and pulls any new symbols, footprints, or 3D models added by teammates while you were away.
-2. **Eliminates Missing Symbol Question Marks:** Guarantees you never open KiCad with outdated or missing component definitions.
-3. **Launches KiCad:** Immediately opens your `.kicad_pro` project in KiCad.
-
----
-
-## 🔄 How Automated Library Syncing Works
-
-Even if you are working solo on your board repository and rarely run `git pull`, your central component library stays updated automatically through **3 layers of protection**:
-
-1. 🚀 **On KiCad Launch (`LAUNCH_KICAD.bat`):** Pulls the latest library symbols & footprints before opening your project.
-2. 🔄 **On Git Commit (`.githooks/pre-commit`):** Automatically fetches latest library commits right before completing any commit, updating your project's submodule pointer automatically.
-3. ☁️ **In GitHub Cloud (`auto-update-submodule.yml`):** GitHub Actions automatically syncs the library submodule on daily schedule or whenever new library parts are published.
-
----
-
-## 🚀 How to Start a New Project
-
-1. Click the **"Use this template"** button at the top of the GitHub repository.
-2. Name your new repository (e.g., `thruster-control-board`) and click **Create repository**.
-3. Clone your repository locally using the recursive flag:
+1. In GitHub, click **Use this template** > **Create a new repository**.
+2. Name the repo to match the board function (e.g. `thruster-interface-board`).
+3. Clone recursively so submodules are pulled:
    ```bash
-   git clone --recursive https://github.com/purduerov/YOUR-BOARD-REPO.git
+   git clone --recursive https://github.com/purduerov/<your-repo-name>.git
+   cd <your-repo-name>
    ```
-   > [!TIP]
-   > **Forgot `--recursive` or seeing missing symbol question marks?** Run:
-   > ```bash
-   > git submodule update --init --recursive
-   > ```
-4. Configure local Git clean filters and auto-sync hooks:
-   * **Windows (PowerShell):** `.\setup_git_filters.ps1`
-   * **Linux / macOS:** `./setup_git_filters.sh`
+   If cloned without `--recursive`, initialize the submodule:
+   ```bash
+   git submodule update --init --recursive
+   ```
 
----
+4. Configure local Git clean filters and hooks:
+   - **Windows (PowerShell):** `.\setup_git_filters.ps1`
+   - **macOS / Linux:** `./setup_git_filters.sh`
 
-## 🧪 Local One-Click Validation (Docker Jobset)
+5. Rename the project files (`board-template.kicad_*`) to match your project name.
 
-Test your board locally with a single command to generate outputs inside Docker:
-* **Windows:** `.\run_validation.ps1`
-* **Linux / macOS:** `./run_validation.sh`
+## Daily Workflow
 
-Outputs generate in `Generated_Outputs/` (Schematic PDF, Interactive BOM, Gerbers).
+You can open the project in KiCad directly, or use the launcher scripts:
+- **Windows:** Double-click `LAUNCH_KICAD.bat`
+- **macOS / Linux:** Run `./LAUNCH_KICAD.sh`
 
----
+The launcher pulls the latest symbols and footprints from `purdue-rov-kicad-lib` before opening your `.kicad_pro` project.
 
-## ➕ Adding New Parts to the Central Library
+## Local Validation (KiBot / Docker)
 
-To add a new component downloaded online (SnapEDA, DigiKey, Ultra Librarian, LCSC, etc.):
-1. Open `libs/purdue-rov-kicad-lib` and double-click **`IMPORT_PART_WIZARD.bat`** (or `IMPORT_PART_WIZARD.sh`).
-2. Use the 1-Click Desktop GUI / Downloads Watcher to import, validate, and push to master!
+Run ERC, DRC, and manufacturing output generation locally before pushing:
+- **Windows (PowerShell):**
+  ```powershell
+  .\run_validation.ps1
+  ```
+- **macOS / Linux:**
+  ```bash
+  ./run_validation.sh
+  ```
+
+Outputs are saved in `Generated_Outputs/`:
+- Schematic PDF
+- Interactive HTML BOM
+- Gerbers and Drill files
+
+## Design Rules & Clearances
+
+- Clearance rules are defined in `custom_rules.kicad_dru`.
+- High-power thruster nets require a minimum 2.0 mm clearance from low-voltage logic (3.3V / 5V).
+
+## Adding New Components
+
+If a part is missing from the central library, add it to `purdue-rov-kicad-lib` rather than creating a local-only symbol. See the [central library README](libs/purdue-rov-kicad-lib/README.md) for details on importing parts and required symbol fields.
