@@ -29,7 +29,14 @@ fi
 
 SYM_FILES=$(find "${SCRIPT_DIR}/libs" -name "*.kicad_sym" 2>/dev/null || true)
 if [ -n "$SYM_FILES" ]; then
-    find "${SCRIPT_DIR}/libs" -name "*.kicad_sym" -exec $PYTHON_CMD "$CACHE_DIR/scripts/linter_validator.py" {} +
+    sym_files_array=()
+    while IFS= read -r file; do
+        if [ -n "$file" ]; then
+            sym_files_array+=("$file")
+        fi
+    done <<< "$SYM_FILES"
+
+    $PYTHON_CMD "$CACHE_DIR/scripts/linter_validator.py" "${sym_files_array[@]}"
 else
     echo "No symbol files found in libs/ to lint."
 fi
