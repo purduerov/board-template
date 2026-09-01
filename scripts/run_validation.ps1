@@ -5,18 +5,20 @@
     This script dynamically clones/pulls pcb-devops to run symbol linting
     and KiBot validation/fabrication outputs locally.
 .EXAMPLE
-    .\run_validation.ps1
+    .\scripts\run_validation.ps1
 #>
+
+$repoRoot = Split-Path -Path $PSScriptRoot -Parent
 
 # Ensure Git clean filters are configured
 $schClean = git config --get filter.kicad_sch_cleaner.clean
 if (-not $schClean) {
     Write-Host "KiCad Git clean filters are not configured. Running setup_git_filters.ps1..." -ForegroundColor Yellow
-    & .\setup_git_filters.ps1
+    & (Join-Path $PSScriptRoot "setup_git_filters.ps1")
 }
 
 # Auto-fetch/pull pcb-devops tools into .pcb-devops-cache
-$cacheDir = Join-Path $PSScriptRoot ".pcb-devops-cache"
+$cacheDir = Join-Path $repoRoot ".pcb-devops-cache"
 if (-not (Test-Path $cacheDir)) {
     Write-Host "Cloning central pcb-devops tools..." -ForegroundColor Cyan
     git clone --depth 1 https://github.com/purduerov/pcb-devops.git $cacheDir
@@ -26,7 +28,7 @@ if (-not (Test-Path $cacheDir)) {
 }
 
 # Run central symbol linter on all *.kicad_sym files in libs/
-$symFiles = Get-ChildItem -Path (Join-Path $PSScriptRoot "libs") -Recurse -Filter "*.kicad_sym" -ErrorAction SilentlyContinue
+$symFiles = Get-ChildItem -Path (Join-Path $repoRoot "libs") -Recurse -Filter "*.kicad_sym" -ErrorAction SilentlyContinue
 if ($symFiles) {
     Write-Host "`nRunning central KiCad symbol library linter..." -ForegroundColor Cyan
     $linterScript = Join-Path $cacheDir "scripts\linter_validator.py"
@@ -49,7 +51,7 @@ try {
 } catch {}
 
 if ($dockerAvailable) {
-    $projectDir = Get-Location
+    $projectDir = $repoRoot
     $pcbFiles = Get-ChildItem -Path $projectDir -Filter "*.kicad_pcb"
     $schFiles = Get-ChildItem -Path $projectDir -Filter "*.kicad_sch"
 

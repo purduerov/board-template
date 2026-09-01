@@ -17,8 +17,8 @@ Starter template for new PCB designs in Purdue ROV. Pre-configured with the team
    ```
 
 4. Configure local Git clean filters and hooks:
-   - **Windows (PowerShell):** `.\setup_git_filters.ps1`
-   - **macOS / Linux:** `./setup_git_filters.sh`
+   - **Windows (PowerShell):** `.\scripts\setup_git_filters.ps1`
+   - **macOS / Linux:** `./scripts/setup_git_filters.sh`
 
 5. Rename the project files (`board-template.kicad_*`) to match your project name.
 
@@ -35,12 +35,13 @@ The launcher pulls the latest symbols and footprints from `purdue-rov-kicad-lib`
 Run ERC, DRC, and manufacturing output generation locally before pushing:
 - **Windows (PowerShell):**
   ```powershell
-  .\run_validation.ps1
+  .\scripts\run_validation.ps1
   ```
 - **macOS / Linux:**
   ```bash
-  ./run_validation.sh
+  ./scripts/run_validation.sh
   ```
+
 
 Outputs are saved in `Generated_Outputs/`:
 - Schematic PDF

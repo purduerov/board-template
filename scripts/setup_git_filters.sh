@@ -2,9 +2,10 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Delegate to central pcb-devops setup_git_filters script
-CACHE_DIR="${SCRIPT_DIR}/.pcb-devops-cache"
+CACHE_DIR="${REPO_ROOT}/.pcb-devops-cache"
 if [ ! -d "$CACHE_DIR" ]; then
     echo "Cloning central pcb-devops tools..."
     git clone --depth 1 https://github.com/purduerov/pcb-devops.git "$CACHE_DIR"
