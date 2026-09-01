@@ -2,6 +2,22 @@
 
 Starter template for new PCB designs in Purdue ROV. Pre-configured with the team component library submodule, automatic Git clean filters, isolation rules, and CI/CD validation.
 
+---
+
+## 🚀 Quickstart: Opening the Project (Recommended)
+
+**Always open the project using the 1-click launcher:**
+
+* **Windows:** Double-click `LAUNCH_KICAD.bat`
+* **macOS / Linux:** Run `./LAUNCH_KICAD.sh`
+
+### What the Launcher Does Automatically:
+1. ⚙️ **Configures Git Hooks & Clean Filters:** Sets up Git to strip volatile viewport/zoom coordinates on every commit, preventing merge conflicts.
+2. 🔄 **Auto-Updates Component Library:** Pulls the freshest symbols, footprints, and 3D models from `purdue-rov-kicad-lib` before opening.
+3. 📐 **Opens KiCad:** Launches the project file with all 6 central library categories pre-linked.
+
+---
+
 ## Creating a New Board Repository
 
 1. In GitHub, click **Use this template** > **Create a new repository**.
@@ -17,14 +33,6 @@ Starter template for new PCB designs in Purdue ROV. Pre-configured with the team
    ```
 
 4. Rename the project files (`board-template.kicad_*`) to match your project name.
-
-## Daily Workflow
-
-You can open the project in KiCad directly, or use the 1-click launcher scripts:
-- **Windows:** Double-click `LAUNCH_KICAD.bat`
-- **macOS / Linux:** Run `./LAUNCH_KICAD.sh`
-
-The launcher automatically pulls the latest component library before opening your KiCad project.
 
 ## Central Component Library & Manager GUI
 
@@ -53,4 +61,3 @@ All CI/CD automation and tooling are centralized in [`purduerov/pcb-devops`](htt
 2. **KiCad Symbol Linting:** Validates mandatory fields (`MPN`, `Manufacturer`, `Category`, `DigiKey`, `Datasheet`, `Temp_Range`) on all library components.
 3. **ERC & DRC Validation:** Executes Electrical and Design Rules Checks via KiBot in GitHub Actions.
 4. **Artifact Generation:** Automatically exports Schematic PDFs, Board Layout PDFs, and Interactive HTML BOMs on every pull request.
-
