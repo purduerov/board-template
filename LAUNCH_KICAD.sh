@@ -7,9 +7,12 @@ echo "⚙️ Configuring local Git hooks and filters..."
 git config core.hooksPath .githooks
 git config submodule.recurse true
 
+echo "🔄 Pulling latest board design updates..."
+git pull --rebase --autostash --quiet || true
+
 echo "🔄 Auto-fetching latest Purdue ROV component library..."
 git -C libs/purdue-rov-kicad-lib pull origin master --quiet || true
-echo "✅ Library up to date! Launching KiCad..."
+echo "✅ Everything up to date! Launching KiCad..."
 
 for PROJ in *.kicad_pro; do
     if [ -f "$PROJ" ]; then
