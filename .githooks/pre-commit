@@ -1,40 +1,38 @@
 #!/usr/bin/env bash
-# Pre-commit hook to verify KiCad volatile metadata clean filters, auto-update submodules, and validate symbols.
+# Pre-commit hook: Auto-syncs library, validates symbols, and auto-configures KiCad filters via central pcb-devops.
 
 # 1. Auto-fetch latest Purdue ROV central library submodule before commit
 if [ -d "libs/purdue-rov-kicad-lib" ]; then
-    echo "🔄 Auto-fetching latest Purdue ROV component library before commit..."
+    echo "🔄 Auto-syncing library submodules to latest remote master..."
     git -C libs/purdue-rov-kicad-lib pull origin master --quiet || true
     git add libs/purdue-rov-kicad-lib || true
 fi
 
-# 2. Verify symbol library compliance if symbol files are modified
+# 2. Verify symbol library compliance
 if [ -f "libs/purdue-rov-kicad-lib/scripts/linter_validator.py" ]; then
-    python3 libs/purdue-rov-kicad-lib/scripts/linter_validator.py libs/purdue-rov-kicad-lib/Symbols/*.kicad_sym || true
+    python3 libs/purdue-rov-kicad-lib/scripts/linter_validator.py libs/purdue-rov-kicad-lib/Symbols/*.kicad_sym 2>/dev/null || true
 fi
 
-# 3. Verify and configure KiCad clean/smudge filters if missing
+# 3. Auto-configure Git clean/smudge filters if not present
 SCH_CLEAN=$(git config --get filter.kicad_sch_cleaner.clean || true)
 
 if [ -z "$SCH_CLEAN" ]; then
-    echo "⚠️  WARNING: KiCad Git clean filters are not configured on this machine!"
-    echo "Running automatic filter configuration..."
-    
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-    
-    if [ -f "$REPO_ROOT/scripts/setup_git_filters.sh" ]; then
-        bash "$REPO_ROOT/scripts/setup_git_filters.sh"
-    elif [ -f "$REPO_ROOT/setup_git_filters.sh" ]; then
-        bash "$REPO_ROOT/setup_git_filters.sh"
-    elif [ -f "$REPO_ROOT/scripts/setup_git_filters.ps1" ]; then
-        powershell.exe -File "$REPO_ROOT/scripts/setup_git_filters.ps1"
+    echo "⚠️  Configuring KiCad Git clean filters via central pcb-devops..."
+    CACHE_DIR=".pcb-devops-cache"
+    if [ ! -d "$CACHE_DIR" ]; then
+        git clone --depth 1 https://github.com/purduerov/pcb-devops.git "$CACHE_DIR" --quiet
+    else
+        git -C "$CACHE_DIR" pull origin master --quiet || true
     fi
-
     
-    echo "Configured filters! Re-staging files to apply the cleaning..."
+    if [ -f "$CACHE_DIR/scripts/setup_git_filters.sh" ]; then
+        bash "$CACHE_DIR/scripts/setup_git_filters.sh"
+    elif [ -f "$CACHE_DIR/scripts/setup_git_filters.ps1" ]; then
+        powershell.exe -File "$CACHE_DIR/scripts/setup_git_filters.ps1"
+    fi
+    
+    echo "Configured filters! Re-staging files..."
     if git diff --cached --name-only --diff-filter=d '*.kicad_sch' '*.kicad_pcb' '*.kicad_pro' | grep -q .; then
         git diff --cached --name-only -z --diff-filter=d '*.kicad_sch' '*.kicad_pcb' '*.kicad_pro' | xargs -0 git add
     fi
-    echo "Re-staging complete."
 fi
