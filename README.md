@@ -48,7 +48,7 @@ Outputs are saved in `Generated_Outputs/`:
 - Interactive HTML BOM
 - Gerbers and Drill files
 
-## Central Component Library
+## Central Component Library & Manager GUI
 
 The template is pre-configured with project-level library tables (`sym-lib-table` and `fp-lib-table`) pointing to `purdue-rov-kicad-lib`:
 - `rov_passives`: Resistors, capacitors, inductors, crystals
@@ -58,14 +58,23 @@ The template is pre-configured with project-level library tables (`sym-lib-table
 - `rov_sensors`: IMUs, temperature, pressure sensors
 - `rov_mech`: Mounting holes, standoffs, test points
 
+### Launching the Library Manager GUI
+To browse parts, inspect footprints, edit properties, or add/delete components in the shared library:
+- **Windows:** Double-click `libs\purdue-rov-kicad-lib\LIBRARY_MANAGER.bat`
+- **macOS / Linux:** Run `./libs/purdue-rov-kicad-lib/LIBRARY_MANAGER.sh` (or `python3 libs/purdue-rov-kicad-lib/scripts/library_manager_gui.py`)
+
+## Adding New Components
+
+If a part is missing from the central library, add it to `purdue-rov-kicad-lib` rather than creating a local-only symbol:
+1. Open the **Library Manager GUI** (or run `libs\purdue-rov-kicad-lib\IMPORT_PART_WIZARD.bat`).
+2. Drag and drop your downloaded `.kicad_sym` / `.kicad_mod` / `.zip` file.
+3. Ensure all 6 required fields (`Category`, `MPN`, `Manufacturer`, `DigiKey`, `Datasheet`, `Temp_Range`) are completed.
+4. Click **Git Sync** in the GUI (or commit & push in `libs/purdue-rov-kicad-lib`).
+
 ## Design Rules & Clearances
 
 - Clearance rules are defined in `custom_rules.kicad_dru`.
 - High-power thruster nets require a minimum 2.0 mm clearance from low-voltage logic (3.3V / 5V).
-
-## Adding New Components
-
-If a part is missing from the central library, add it to `purdue-rov-kicad-lib` rather than creating a local-only symbol. See the [central library README](libs/purdue-rov-kicad-lib/README.md) for details on importing parts and required symbol fields (`Category`, `MPN`, `Manufacturer`, `DigiKey`, `Datasheet`, `Temp_Range`).
 
 ## CI/CD Preflight Checks
 
@@ -73,4 +82,5 @@ GitHub Actions automatically runs preflight checks on pull requests and pushes:
 1. **KiCad Symbol Linting:** Validates mandatory fields on all `.kicad_sym` files in the library.
 2. **ERC & DRC Validation:** Executes Electrical and Design Rules Checks via KiBot.
 3. **Artifact Generation:** Exports schematic PDFs, Interactive HTML BOMs, and fabrication Gerbers to workflow artifacts.
+
 
