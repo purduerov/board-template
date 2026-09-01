@@ -47,6 +47,16 @@ Outputs are saved in `Generated_Outputs/`:
 - Interactive HTML BOM
 - Gerbers and Drill files
 
+## Central Component Library
+
+The template is pre-configured with project-level library tables (`sym-lib-table` and `fp-lib-table`) pointing to `purdue-rov-kicad-lib`:
+- `rov_passives`: Resistors, capacitors, inductors, crystals
+- `rov_power`: Voltage regulators, buck/boost converters, MOSFETs, diodes
+- `rov_logic`: MCUs, logic ICs, op-amps, level shifters, transceivers
+- `rov_connectors`: Power terminals, XT60/XT30, headers, USB, JST connectors
+- `rov_sensors`: IMUs, temperature, pressure sensors
+- `rov_mech`: Mounting holes, standoffs, test points
+
 ## Design Rules & Clearances
 
 - Clearance rules are defined in `custom_rules.kicad_dru`.
@@ -54,4 +64,12 @@ Outputs are saved in `Generated_Outputs/`:
 
 ## Adding New Components
 
-If a part is missing from the central library, add it to `purdue-rov-kicad-lib` rather than creating a local-only symbol. See the [central library README](libs/purdue-rov-kicad-lib/README.md) for details on importing parts and required symbol fields.
+If a part is missing from the central library, add it to `purdue-rov-kicad-lib` rather than creating a local-only symbol. See the [central library README](libs/purdue-rov-kicad-lib/README.md) for details on importing parts and required symbol fields (`Category`, `MPN`, `Manufacturer`, `DigiKey`, `Datasheet`, `Temp_Range`).
+
+## CI/CD Preflight Checks
+
+GitHub Actions automatically runs preflight checks on pull requests and pushes:
+1. **KiCad Symbol Linting:** Validates mandatory fields on all `.kicad_sym` files in the library.
+2. **ERC & DRC Validation:** Executes Electrical and Design Rules Checks via KiBot.
+3. **Artifact Generation:** Exports schematic PDFs, Interactive HTML BOMs, and fabrication Gerbers to workflow artifacts.
+
