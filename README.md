@@ -52,4 +52,5 @@ All CI/CD automation and tooling are centralized in [`purduerov/pcb-devops`](htt
 1. **Automated Git Clean Filters:** Configured automatically by `.githooks/pre-commit` to prevent viewport/zoom merge noise.
 2. **KiCad Symbol Linting:** Validates mandatory fields (`MPN`, `Manufacturer`, `Category`, `DigiKey`, `Datasheet`, `Temp_Range`) on all library components.
 3. **ERC & DRC Validation:** Executes Electrical and Design Rules Checks via KiBot in GitHub Actions.
-4. **Artifact Generation:** Exports schematic PDFs, Interactive HTML BOMs, and fabrication Gerbers on every pull request.
+4. **Artifact Generation:** Automatically exports Schematic PDFs, Board Layout PDFs, and Interactive HTML BOMs on every pull request.
+
