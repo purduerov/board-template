@@ -19,8 +19,9 @@ on:
 
 jobs:
   run-validation:
-    uses: purduerov/pcb-devops/.github/workflows/run-kicad-ci.yml@4bd1d2361662998a44b49467d3dd10b42f360875
+    uses: purduerov/pcb-devops/.github/workflows/run-kicad-ci.yml@50b32b1d7d2427a1c7cbb36c31bfd78ca2cfd1e3
     secrets: inherit
+
 
 
 
