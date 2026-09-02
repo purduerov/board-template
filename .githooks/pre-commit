@@ -3,36 +3,37 @@
 
 # 1. Auto-fetch latest Purdue ROV central library submodule before commit
 if [ -d "libs/purdue-rov-kicad-lib" ]; then
-    echo "🔄 Auto-syncing library submodules to latest remote master..."
-    git -C libs/purdue-rov-kicad-lib pull origin master --quiet || true
-    git add libs/purdue-rov-kicad-lib || true
+    echo "🔄 Auto-syncing library submodule to latest remote master..."
+    git -C libs/purdue-rov-kicad-lib pull origin master --quiet 2>/dev/null || true
+    git add libs/purdue-rov-kicad-lib 2>/dev/null || true
 fi
 
 # 2. Verify symbol library compliance
 if [ -f "libs/purdue-rov-kicad-lib/scripts/linter_validator.py" ]; then
-    python3 libs/purdue-rov-kicad-lib/scripts/linter_validator.py libs/purdue-rov-kicad-lib/Symbols/*.kicad_sym 2>/dev/null || true
+    python3 libs/purdue-rov-kicad-lib/scripts/linter_validator.py libs/purdue-rov-kicad-lib/Symbols/*.kicad_sym 2>/dev/null || \
+    python libs/purdue-rov-kicad-lib/scripts/linter_validator.py libs/purdue-rov-kicad-lib/Symbols/*.kicad_sym 2>/dev/null || true
 fi
 
 # 3. Auto-configure Git clean/smudge filters if not present
-SCH_CLEAN=$(git config --get filter.kicad_sch_cleaner.clean || true)
+SCH_CLEAN=$(git config --get filter.kicad_sch_cleaner.clean 2>/dev/null || true)
 
 if [ -z "$SCH_CLEAN" ]; then
     echo "⚠️  Configuring KiCad Git clean filters via central pcb-devops..."
     CACHE_DIR=".pcb-devops-cache"
     if [ ! -d "$CACHE_DIR" ]; then
-        git clone --depth 1 https://github.com/purduerov/pcb-devops.git "$CACHE_DIR" --quiet
+        git clone --depth 1 https://github.com/purduerov/pcb-devops.git "$CACHE_DIR" --quiet 2>/dev/null || true
     else
-        git -C "$CACHE_DIR" pull origin master --quiet || true
+        git -C "$CACHE_DIR" pull origin master --quiet 2>/dev/null || true
     fi
     
     if [ -f "$CACHE_DIR/scripts/setup_git_filters.sh" ]; then
-        bash "$CACHE_DIR/scripts/setup_git_filters.sh"
+        bash "$CACHE_DIR/scripts/setup_git_filters.sh" 2>/dev/null || true
     elif [ -f "$CACHE_DIR/scripts/setup_git_filters.ps1" ]; then
-        powershell.exe -File "$CACHE_DIR/scripts/setup_git_filters.ps1"
+        powershell.exe -File "$CACHE_DIR/scripts/setup_git_filters.ps1" 2>/dev/null || true
     fi
     
-    echo "Configured filters! Re-staging files..."
+    echo "✅ Configured filters! Re-staging files..."
     if git diff --cached --name-only --diff-filter=d '*.kicad_sch' '*.kicad_pcb' '*.kicad_pro' | grep -q .; then
-        git diff --cached --name-only -z --diff-filter=d '*.kicad_sch' '*.kicad_pcb' '*.kicad_pro' | xargs -0 git add
+        git diff --cached --name-only -z --diff-filter=d '*.kicad_sch' '*.kicad_pcb' '*.kicad_pro' | xargs -0 git add 2>/dev/null || true
     fi
 fi
