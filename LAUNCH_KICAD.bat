@@ -1,14 +1,8 @@
 @echo off
-title Purdue ROV - Launch KiCad Project
-echo ⚙️ Configuring local Git hooks and filters...
-git config core.hooksPath .githooks
-git config submodule.recurse true
-echo 🔄 Pulling latest board design updates...
-git pull --rebase --autostash --quiet
-echo 🔄 Auto-fetching latest Purdue ROV component library...
-git -C libs/purdue-rov-kicad-lib pull origin master --quiet
-echo ✅ Everything up to date! Launching KiCad...
-for %%f in (*.kicad_pro) do (
-    start "" "%%f"
-    exit /b 0
+set "CACHE_DIR=%~dp0.pcb-devops-cache"
+if not exist "%CACHE_DIR%" (
+    git clone --depth 1 https://github.com/purduerov/pcb-devops.git "%CACHE_DIR%" --quiet
+) else (
+    git -C "%CACHE_DIR%" pull origin master --quiet
 )
+call "%CACHE_DIR%\scripts\LAUNCH_KICAD.bat" "%~dp0"
