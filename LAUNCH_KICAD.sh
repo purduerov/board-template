@@ -3,10 +3,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CACHE_DIR="$SCRIPT_DIR/.pcb-devops-cache"
 
 if [ ! -d "$CACHE_DIR" ]; then
-    git clone --depth 1 https://github.com/purduerov/pcb-devops.git "$CACHE_DIR" --quiet >/dev/null 2>&1 || true
-else
-    git -C "$CACHE_DIR" pull origin master --quiet >/dev/null 2>&1 || true
+    git clone https://github.com/purduerov/pcb-devops.git "$CACHE_DIR" --quiet >/dev/null 2>&1 || true
 fi
+git -C "$CACHE_DIR" fetch origin 16695b691ba73fef6db2073b55c0e9f680a56682 --quiet >/dev/null 2>&1 || true
+git -C "$CACHE_DIR" checkout 16695b691ba73fef6db2073b55c0e9f680a56682 --quiet >/dev/null 2>&1 || true
 
 if [ -f "$CACHE_DIR/scripts/LAUNCH_KICAD.sh" ]; then
     bash "$CACHE_DIR/scripts/LAUNCH_KICAD.sh" "$SCRIPT_DIR"
