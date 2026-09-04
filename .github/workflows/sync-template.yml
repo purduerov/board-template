@@ -15,12 +15,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
         with:
           submodules: recursive
 
       - name: Sync with board-template
-        uses: AndreasAugustin/actions-template-sync@v2
+        uses: AndreasAugustin/actions-template-sync@5362c4f8ee36a9e356adf24b8abc5462550664b3  # v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           source_repo_path: purduerov/board-template
