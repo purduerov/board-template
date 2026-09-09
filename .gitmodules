@@ -1,3 +1,4 @@
 [submodule "libs/purdue-rov-kicad-lib"]
 	path = libs/purdue-rov-kicad-lib
 	url = ../purdue-rov-kicad-lib.git
+	branch = master

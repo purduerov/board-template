@@ -5,7 +5,7 @@ CACHE_DIR="$SCRIPT_DIR/.pcb-devops-cache"
 if [ ! -d "$CACHE_DIR" ]; then
     git clone --depth 1 https://github.com/purduerov/pcb-devops.git "$CACHE_DIR" --quiet >/dev/null 2>&1 || true
 else
-    git -C "$CACHE_DIR" pull origin master --quiet >/dev/null 2>&1 || true
+    git -C "$CACHE_DIR" fetch --depth 1 origin master --quiet >/dev/null 2>&1 && git -C "$CACHE_DIR" reset --hard origin/master --quiet >/dev/null 2>&1 || true
 fi
 
 if [ -f "$CACHE_DIR/scripts/LAUNCH_KICAD.sh" ]; then

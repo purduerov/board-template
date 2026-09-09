@@ -1,9 +1,11 @@
 @echo off
+chcp 65001 >nul 2>&1
 set "CACHE_DIR=%~dp0.pcb-devops-cache"
 if not exist "%CACHE_DIR%" (
     git clone --depth 1 https://github.com/purduerov/pcb-devops.git "%CACHE_DIR%" --quiet >nul 2>&1
 ) else (
-    git -C "%CACHE_DIR%" pull origin master --quiet >nul 2>&1
+    git -C "%CACHE_DIR%" fetch --depth 1 origin master --quiet >nul 2>&1
+    git -C "%CACHE_DIR%" reset --hard origin/master --quiet >nul 2>&1
 )
 
 if exist "%CACHE_DIR%\scripts\LAUNCH_KICAD.bat" (
