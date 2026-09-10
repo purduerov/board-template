@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
 # Post-merge hook to automatically sync submodules to remote master after git pull
 echo "🔄 Auto-syncing library submodules to latest remote master..."
-git submodule update --remote --recursive
+git submodule sync --quiet 2>/dev/null || true
+git submodule update --init --recursive 2>/dev/null || true
+if [ -d "libs/purdue-rov-kicad-lib" ]; then
+    git -C libs/purdue-rov-kicad-lib config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" 2>/dev/null || true
+    git -C libs/purdue-rov-kicad-lib fetch origin master --quiet 2>/dev/null || true
+    git -C libs/purdue-rov-kicad-lib checkout master --quiet 2>/dev/null || true
+    git -C libs/purdue-rov-kicad-lib pull origin master --ff-only --quiet 2>/dev/null || true
+fi

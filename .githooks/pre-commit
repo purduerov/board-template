@@ -4,7 +4,10 @@
 # 1. Auto-fetch latest Purdue ROV central library submodule before commit
 if [ -d "libs/purdue-rov-kicad-lib" ]; then
     echo "🔄 Auto-syncing library submodule to latest remote master..."
-    git -C libs/purdue-rov-kicad-lib pull origin master --quiet 2>/dev/null || true
+    git -C libs/purdue-rov-kicad-lib config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" 2>/dev/null || true
+    git -C libs/purdue-rov-kicad-lib fetch origin master --quiet 2>/dev/null || true
+    git -C libs/purdue-rov-kicad-lib checkout master --quiet 2>/dev/null || true
+    git -C libs/purdue-rov-kicad-lib pull origin master --ff-only --quiet 2>/dev/null || true
     git add libs/purdue-rov-kicad-lib 2>/dev/null || true
 fi
 
