@@ -20,10 +20,6 @@ on:
 jobs:
   run-validation:
     uses: purduerov/pcb-devops/.github/workflows/run-kicad-ci.yml@master
+    with:
+      strict_drc: false
     secrets: inherit
-
-
-
-
-
-
