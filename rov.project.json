@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "project_name": "board-template",
+  "kicad_version": "10",
+  "platform_ref": "master",
+  "library": {
+    "path": "libs/purdue-rov-kicad-lib",
+    "branch": "master",
+    "update_policy": "pull-request"
+  },
+  "ci_profile": "standard"
+}
