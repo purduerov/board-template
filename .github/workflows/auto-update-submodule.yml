@@ -9,6 +9,14 @@ on:
 
 jobs:
   update-library:
+    # A reusable workflow can only narrow the caller's token, never widen it, so
+    # this wrapper grants exactly what update-library.yml asks for. Without this
+    # block the called workflow is clamped to the repository default, which is
+    # read-only on several boards and would make every scheduled update fail to
+    # push the update branch or open its pull request.
+    permissions:
+      contents: write
+      pull-requests: write
     uses: purduerov/pcb-devops/.github/workflows/update-library.yml@master
     with:
       library-path: libs/purdue-rov-kicad-lib
