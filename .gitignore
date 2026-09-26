@@ -28,3 +28,5 @@ Thumbs.db
 # Generated local ROV hooks
 .rov-hooks/
 
+# KiCad project backup archives
+*-backups/
