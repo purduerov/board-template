@@ -1,39 +1,19 @@
-name: 🔄 Auto-Update Library Submodule
+name: Library Update
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight UTC
-  workflow_dispatch:      # Allows manual trigger button in GitHub Actions UI
-  repository_dispatch:    # Triggered automatically when purdue-rov-kicad-lib updates
+  workflow_dispatch:
+  repository_dispatch:
     types: [update-library]
+  schedule:
+    - cron: "17 3 * * 1"
 
 jobs:
-  update-submodule:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
-
-      - name: Update submodule to latest master
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git submodule update --remote --recursive
-          
-      - name: Commit and Push if updated
-        run: |
-          if git diff --quiet libs/purdue-rov-kicad-lib; then
-            echo "Submodule is already up-to-date."
-          else
-            git add libs/purdue-rov-kicad-lib
-            git commit -m "chore(submodule): auto-update purdue-rov-kicad-lib to latest master"
-            git push origin master
-          fi
+  update-library:
+    uses: purduerov/pcb-devops/.github/workflows/update-library.yml@master
+    with:
+      library-path: libs/purdue-rov-kicad-lib
+      library-branch: master
+      update-branch: chore/library-update
+      auto-merge: false
+      platform-ref: master
+    secrets: inherit
