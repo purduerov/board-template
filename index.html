@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>purduerov/board-template | Hardware Design Portal</title>
+    <style>
+        :root {
+            --bg: #0f111a;
+            --surface: #1e222d;
+            --surface-hover: #282e3d;
+            --accent: #cfb991; /* Purdue Gold */
+            --accent-hover: #e5cf9f;
+            --text: #f0f3f6;
+            --text-muted: #8b949e;
+            --border: #30363d;
+            --card-radius: 12px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--card-radius);
+            padding: 2.5rem;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+        .header h1 {
+            margin: 0 0 0.5rem 0;
+            color: var(--accent);
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .meta-badges {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #161b22;
+            border: 1px solid var(--border);
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: #161b22;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .card:hover {
+            background: var(--surface-hover);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .card-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+            color: var(--accent);
+        }
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .featured {
+            border-color: var(--accent);
+            background: linear-gradient(180deg, rgba(207, 185, 145, 0.08) 0%, #161b22 100%);
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 1.25rem;
+        }
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>purduerov/board-template</h1>
+            <p>Automated Hardware Design & Assembly Portal</p>
+            <div class="meta-badges">
+                <span class="badge">Branch: <strong>master</strong></span>
+                <span class="badge">Commit: <code>0ffdf6e</code></span>
+                <span class="badge">Built via <strong>KiBot CI</strong></span>
+            </div>
+        </div>
+
+        <div class="cards-grid">
+
+            <a href="board-template-iBOM.html" class="card featured" target="_blank">
+                <div class="card-title">Interactive BOM</div>
+                <div class="card-desc">Interactive assembly & soldering viewer with highlighted component pads</div>
+            </a>
+
+            <a href="board-template-Schematic.pdf" class="card" target="_blank">
+                <div class="card-title">Schematic PDF</div>
+                <div class="card-desc">Vector schematic sheets with complete pinouts and nets</div>
+            </a>
+
+            <a href="board-template-Layout.pdf" class="card" target="_blank">
+                <div class="card-title">PCB Layout PDF</div>
+                <div class="card-desc">Full 2D board layer traces, silkinscreen, and placement drawings</div>
+            </a>
+
+            <a href="board-template-BOM.csv" class="card" download>
+                <div class="card-title">BOM Spreadsheet</div>
+                <div class="card-desc">Download CSV parts list with MPN, DigiKey, and manufacturer data</div>
+            </a>
+
+        </div>
+
+        <div class="footer">
+            Purdue ROV Electrical Engineering &bull; Powered by <a href="https://github.com/purduerov/pcb-devops" target="_blank">pcb-devops</a>
+        </div>
+    </div>
+</body>
+</html>
