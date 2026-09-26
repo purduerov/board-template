@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+"""Resolve and run the shared ``rov`` CLI for a board created from this template.
+
+The template does not vendor the platform tools. This script finds the CLI the
+same way ``LAUNCH_KICAD`` and the generated hook do, and hands the work to it, so
+there is exactly one implementation of board bootstrap.
+
+Exit codes are the CLI's own, except for ``2`` which is also used here for a
+missing CLI: a member who runs ``python bootstrap.py`` before ``LAUNCH_KICAD``
+must get one actionable line naming what to do, never a traceback.
+"""
 import argparse
 import os
 import subprocess
@@ -6,6 +16,12 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+
+MISSING_CLI_HINT = (
+    "The Purdue ROV DevOps CLI (rov.py) was not found. Run LAUNCH_KICAD once to "
+    "cache it, or set ROV_DEVOPS_DIR to your KiCad/DevOps checkout, then run "
+    "this command again."
+)
 
 
 def find_rov_script() -> Path:
@@ -17,7 +33,7 @@ def find_rov_script() -> Path:
     for candidate in candidates:
         if candidate and candidate.is_file():
             return candidate
-    raise FileNotFoundError("rov.py not found; run LAUNCH_KICAD once or set ROV_DEVOPS_DIR")
+    raise FileNotFoundError(MISSING_CLI_HINT)
 
 
 def main() -> int:
@@ -26,7 +42,14 @@ def main() -> int:
     parser.add_argument("--project-name")
     parser.add_argument("--non-interactive", action="store_true")
     args = parser.parse_args()
-    command = [sys.executable, str(find_rov_script()), "board", "bootstrap",
+    try:
+        rov_script = find_rov_script()
+    except FileNotFoundError as exc:
+        # A missing CLI is BLOCKED, the same state the CLI itself uses for a
+        # missing prerequisite, so a caller can treat the two alike.
+        print(f"[BLOCKED] bootstrap: {exc}", file=sys.stderr)
+        return 2
+    command = [sys.executable, str(rov_script), "board", "bootstrap",
                "--project-dir", str(args.project_dir.resolve())]
     if args.project_name:
         command.extend(["--project-name", args.project_name])
